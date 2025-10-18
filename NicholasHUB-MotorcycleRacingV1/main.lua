@@ -91,7 +91,7 @@ Instance.new("UICorner",header).CornerRadius=UDim.new(0,14)
 -- logo from GitHub (optional via custom asset)
 local logo=Instance.new("ImageLabel"); logo.BackgroundTransparency=1; logo.Size=UDim2.fromOffset(40,40); logo.Position=UDim2.new(0,16,0,8); logo.ZIndex=12; logo.Parent=header
 do
-  local LOGO_URL = "https://raw.githubusercontent.com/NicholasWeterby/NicholasHUB-Motorcycle-Racing-V1/main/NicholasHUB-MotorcycleRacingV1/assets/logo_512.png"
+  local LOGO_URL = "https://raw.githubusercontent.com/NicholasWeterby/NicholasHUB-Motorcycle-Racing-V1/main/NicholasHUB-MotorcycleRacingV1/src/assets/logo512.png"
   if getasset and hasWrite then
     local ok,bytes = pcall(game.HttpGet,game,LOGO_URL)
     if ok and bytes and #bytes>0 then
@@ -325,3 +325,4 @@ print("[NicholasV] Control Hub v1.2 ready.")
 -- auto-resume running toggles
 if flags.magnet then task.spawn(startMagnet) end
 if flags.rebirth then task.spawn(startRebirth) end
+
