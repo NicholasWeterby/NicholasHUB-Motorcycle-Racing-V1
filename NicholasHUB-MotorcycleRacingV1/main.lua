@@ -1,67 +1,69 @@
---// NicholasV HUB GUI System (Dark Blue Neon Theme)
-local GUI = {}
+-- NicholasV HUB Loader (Debug)
+local BASE = "https://raw.githubusercontent.com/NicholasWeterby/NicholasHUB-Motorcycle-Racing-V1/main/NicholasHUB-MotorcycleRacingV1/src/"
 
-function GUI.Init()
-    local player = game.Players.LocalPlayer
-    local playerGui = player:WaitForChild("PlayerGui")
-
-    if playerGui:FindFirstChild("NicholasV_HUB") then
-        playerGui:FindFirstChild("NicholasV_HUB"):Destroy()
+local function import(path)
+    local url = BASE..path.."?nv="..tostring(os.time()) -- กันแคช
+    local ok, src = pcall(function() return game:HttpGet(url) end)
+    if not ok then
+        warn("[NV] GET FAIL:", path, src)
+        return nil
     end
-
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "NicholasV_HUB"
-    screenGui.ResetOnSpawn = false
-    screenGui.IgnoreGuiInset = true
-    screenGui.Parent = playerGui
-
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "MainPanel"
-    mainFrame.Size = UDim2.new(0, 420, 0, 260)
-    mainFrame.Position = UDim2.new(0.5, -210, 0.5, -130)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Parent = screenGui
-
-    local uiStroke = Instance.new("UIStroke", mainFrame)
-    uiStroke.Color = Color3.fromRGB(0, 180, 255)
-    uiStroke.Thickness = 2
-    uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    local corner = Instance.new("UICorner", mainFrame)
-    corner.CornerRadius = UDim.new(0, 8)
-
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 45)
-    title.BackgroundTransparency = 1
-    title.Text = "⚡ NicholasV Control Hub 2025 ⚡"
-    title.Font = Enum.Font.GothamBold
-    title.TextScaled = true
-    title.TextColor3 = Color3.fromRGB(0, 200, 255)
-    title.Parent = mainFrame
-
-    local testButton = Instance.new("TextButton")
-    testButton.Size = UDim2.new(0, 160, 0, 40)
-    testButton.Position = UDim2.new(0.5, -80, 0.7, -20)
-    testButton.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-    testButton.Text = "Click Me!"
-    testButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    testButton.Font = Enum.Font.GothamSemibold
-    testButton.TextScaled = true
-    testButton.Parent = mainFrame
-
-    local corner2 = Instance.new("UICorner", testButton)
-    corner2.CornerRadius = UDim.new(0, 6)
-
-    testButton.MouseButton1Click:Connect(function()
-        testButton.Text = "✅ Working!"
-        testButton.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
-        task.wait(0.6)
-        testButton.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-        testButton.Text = "Click Me!"
-    end)
-
-    print("[NicholasV_HUB] GUI Initialized Successfully.")
+    print("[NV] GET OK:", path, "bytes:", #src)
+    local ok2, mod = pcall(function() return loadstring(src)() end)
+    if not ok2 then
+        warn("[NV] LOADSTRING FAIL:", path, mod)
+        return nil
+    end
+    print("[NV] LOAD OK:", path)
+    return mod
 end
 
-return GUI
+local Core = import("core/init.lua")
+local GUI  = import("gui/main.lua")
+local Adm  = import("admin/admin.lua")
+
+if Core and Core.Start then
+    print("[NV] calling Core.Start()")
+    pcall(Core.Start)
+else
+    warn("[NV] Core missing Start")
+end
+
+if GUI and GUI.Init then
+    print("[NV] calling GUI.Init()")
+    local ok, err = pcall(GUI.Init)
+    if not ok then warn("[NV] GUI.Init error:", err) end
+else
+    warn("[NV] GUI missing Init")
+end
+
+if Adm and Adm.Init then
+    print("[NV] calling Admin.Init()")
+    pcall(Adm.Init)
+else
+    warn("[NV] Admin missing Init")
+end
+
+-- Fallback: ถ้า GUI ไม่ขึ้น ให้ดันกล่องทดสอบขึ้นมาเลย
+task.delay(0.3, function()
+    local lp = game.Players.LocalPlayer
+    local pg = lp:FindFirstChildOfClass("PlayerGui")
+    if pg and not pg:FindFirstChild("NicholasV_HUB") then
+        warn("[NV] Fallback GUI spawn")
+        local g = Instance.new("ScreenGui", pg) g.Name = "NicholasV_HUB"
+        local f = Instance.new("Frame", g)
+        f.Size = UDim2.new(0,420,0,220)
+        f.Position = UDim2.new(0.5,-210,0.5,-110)
+        f.BackgroundColor3 = Color3.fromRGB(10,10,25)
+        Instance.new("UICorner", f).CornerRadius = UDim.new(0,10)
+        local lbl = Instance.new("TextLabel", f)
+        lbl.Size = UDim2.new(1,0,0,50)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = "NV Fallback GUI ✓"
+        lbl.Font = Enum.Font.GothamBold
+        lbl.TextScaled = true
+        lbl.TextColor3 = Color3.fromRGB(0,200,255)
+    end
+end)
+
+print("[NV] loader finished")
