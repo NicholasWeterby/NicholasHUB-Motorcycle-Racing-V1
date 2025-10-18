@@ -1,34 +1,50 @@
---// NicholasHUB Motorcycle Racing V1 Loader
---// By NicholasV 2025
+--// NicholasV HUB Loader (Full Debug)
+print("[NV] Loader started")
 
--- ตัว URL base
 local BASE = "https://raw.githubusercontent.com/NicholasWeterby/NicholasHUB-Motorcycle-Racing-V1/main/NicholasHUB-MotorcycleRacingV1/src/"
 
--- โหลดไฟล์จาก GitHub
+-- ฟังก์ชันโหลดไฟล์จาก GitHub
 local function import(path)
+    print("[NV] Importing:", path)
     local url = BASE..path.."?v="..tostring(os.time())
     local ok, src = pcall(function() return game:HttpGet(url) end)
     if not ok then
-        warn("[NicholasV] Failed to load:", path)
+        warn("[NV] ❌ HttpGet failed for", path, ":", src)
         return nil
     end
+    print("[NV] ✅ Got code:", #src, "bytes")
+
     local fn, err = loadstring(src)
     if not fn then
-        warn("[NicholasV] loadstring error:", err)
+        warn("[NV] ❌ loadstring failed:", err)
         return nil
     end
-    local result = fn()
-    print("[NicholasV] Loaded:", path)
+    local result = nil
+    local ok2, msg = pcall(function()
+        result = fn()
+    end)
+    if not ok2 then
+        warn("[NV] ❌ Error executing file:", msg)
+    else
+        print("[NV] ✅ Executed:", path)
+    end
     return result
 end
 
--- โหลด modules
+-- โหลด GUI module
 local GUI = import("gui/main.lua")
 
 -- รัน GUI
-if GUI and GUI.Init then
-    print("[NicholasV] Initializing GUI...")
-    GUI.Init()
+if GUI and type(GUI.Init) == "function" then
+    print("[NV] 🚀 Running GUI.Init() ...")
+    local ok, msg = pcall(GUI.Init)
+    if ok then
+        print("[NV] ✅ GUI.Init() executed successfully!")
+    else
+        warn("[NV] ❌ GUI.Init() error:", msg)
+    end
 else
-    warn("[NicholasV] GUI not found or missing Init()")
+    warn("[NV] ❌ GUI.Init not found or GUI nil")
 end
+
+print("[NV] Loader done")
