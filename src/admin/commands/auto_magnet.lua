@@ -1,0 +1,1 @@
+-- Auto Magnet Command 
