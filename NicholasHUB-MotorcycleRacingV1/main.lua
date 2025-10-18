@@ -1,90 +1,104 @@
---// NicholasV HUB GUI (Blue-Black Theme)
+--// NicholasV HUB GUI (Blue–Black Theme)
 local GUI = {}
 
 function GUI.Init()
-    print("[NicholasV] GUI.Init() starting...")
+	print("[NicholasV] GUI.Init() starting...")
 
-    local player = game.Players.LocalPlayer
-    local playerGui
+	local player = game.Players.LocalPlayer
+	local playerGui
 
-    repeat
-        playerGui = player:FindFirstChild("PlayerGui")
-        task.wait(0.5)
-    until playerGui
+	repeat
+		playerGui = player:FindFirstChild("PlayerGui")
+		task.wait(0.5)
+	until playerGui
 
-    print("[NicholasV] PlayerGui found, building UI...")
+	print("[NicholasV] PlayerGui found, building UI...")
 
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "NicholasV_HUB"
-    screenGui.IgnoreGuiInset = true
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = playerGui
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "NicholasV_HUB"
+	screenGui.IgnoreGuiInset = true
+	screenGui.ResetOnSpawn = false
+	screenGui.Parent = playerGui
 
-    -- 🌌 Main frame
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 420, 0, 240)
-    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(5, 10, 25)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.BackgroundTransparency = 0.1
-    mainFrame.Parent = screenGui
+	-- Fade animation
+	local blur = Instance.new("Frame")
+	blur.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	blur.BackgroundTransparency = 1
+	blur.Size = UDim2.new(1, 0, 1, 0)
+	blur.Parent = screenGui
+	game:GetService("TweenService"):Create(blur, TweenInfo.new(1), {BackgroundTransparency = 0.6}):Play()
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Thickness = 2
-    stroke.Color = Color3.fromRGB(0, 180, 255)
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    stroke.Parent = mainFrame
+	-- Main frame
+	local mainFrame = Instance.new("Frame")
+	mainFrame.Name = "MainFrame"
+	mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	mainFrame.Size = UDim2.new(0, 460, 0, 260)
+	mainFrame.BackgroundColor3 = Color3.fromRGB(5, 10, 25)
+	mainFrame.BorderSizePixel = 0
+	mainFrame.Parent = screenGui
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 10)
-    corner.Parent = mainFrame
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 12)
+	corner.Parent = mainFrame
 
-    -- ⚡ Title bar
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 45)
-    title.BackgroundColor3 = Color3.fromRGB(10, 20, 40)
-    title.Text = "⚡ NicholasV HUB 2025"
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 22
-    title.TextColor3 = Color3.fromRGB(0, 200, 255)
-    title.Parent = mainFrame
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 2
+	stroke.Color = Color3.fromRGB(0, 170, 255)
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = mainFrame
 
-    local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 10)
-    titleCorner.Parent = title
+	-- Logo
+	local logo = Instance.new("ImageLabel")
+	logo.Size = UDim2.new(0, 60, 0, 60)
+	logo.Position = UDim2.new(0, 15, 0, 10)
+	logo.BackgroundTransparency = 1
+	logo.Image = "rbxassetid://<ใส่โลโก้ตัว N ของคุณ>" -- ใส่ asset id ตรงนี้
+	logo.Parent = mainFrame
 
-    local titleStroke = Instance.new("UIStroke")
-    titleStroke.Thickness = 1
-    titleStroke.Color = Color3.fromRGB(0, 255, 255)
-    titleStroke.Parent = title
+	-- Title
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, -100, 0, 40)
+	title.Position = UDim2.new(0, 80, 0, 10)
+	title.BackgroundTransparency = 1
+	title.Text = "⚡ NicholasV Control Hub 2025"
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 22
+	title.TextColor3 = Color3.fromRGB(0, 200, 255)
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Parent = mainFrame
 
-    -- 🔘 Button example
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 160, 0, 45)
-    button.Position = UDim2.new(0.5, -80, 0.5, -10)
-    button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-    button.Text = "Activate Magnet"
-    button.Font = Enum.Font.GothamBold
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.TextSize = 20
-    button.Parent = mainFrame
+	-- Button template function
+	local function createButton(name, text, yPos, color)
+		local btn = Instance.new("TextButton")
+		btn.Name = name
+		btn.Size = UDim2.new(0, 180, 0, 45)
+		btn.Position = UDim2.new(0.5, -90, 0, yPos)
+		btn.BackgroundColor3 = color or Color3.fromRGB(0, 120, 255)
+		btn.Text = text
+		btn.Font = Enum.Font.GothamBold
+		btn.TextSize = 20
+		btn.TextColor3 = Color3.new(1, 1, 1)
+		btn.Parent = mainFrame
 
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = button
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 6)
+		c.Parent = btn
 
-    -- 🪄 Button effect
-    button.MouseButton1Click:Connect(function()
-        button.Text = "✅ Activated"
-        button.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
-        task.wait(1.5)
-        button.Text = "Activate Magnet"
-        button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-    end)
+		btn.MouseButton1Click:Connect(function()
+			btn.Text = "✅ " .. text .. " ON"
+			btn.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
+			task.wait(1.5)
+			btn.Text = text
+			btn.BackgroundColor3 = color or Color3.fromRGB(0, 120, 255)
+		end)
+	end
 
-    print("[NicholasV] ✅ GUI Initialized Successfully!")
+	-- Buttons
+	createButton("Magnet", "Auto Magnet", 80)
+	createButton("Rebirth", "Auto Rebirth", 140, Color3.fromRGB(0, 100, 200))
+
+	print("[NicholasV] ✅ GUI Initialized Successfully!")
 end
 
 GUI.Init()
