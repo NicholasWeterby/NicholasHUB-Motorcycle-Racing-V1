@@ -1,50 +1,82 @@
---// NicholasV HUB Loader (Full Debug)
-print("[NV] Loader started")
+--// NicholasV HUB GUI (Blue-Black Theme)
+local GUI = {}
 
-local BASE = "https://raw.githubusercontent.com/NicholasWeterby/NicholasHUB-Motorcycle-Racing-V1/main/NicholasHUB-MotorcycleRacingV1/src/"
+function GUI.Init()
+    print("[NicholasV] GUI.Init() starting...")
 
--- ฟังก์ชันโหลดไฟล์จาก GitHub
-local function import(path)
-    print("[NV] Importing:", path)
-    local url = BASE..path.."?v="..tostring(os.time())
-    local ok, src = pcall(function() return game:HttpGet(url) end)
-    if not ok then
-        warn("[NV] ❌ HttpGet failed for", path, ":", src)
-        return nil
+    -- รอให้ PlayerGui โหลดแน่นอน
+    local player = game.Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui", 10)
+    if not playerGui then
+        warn("[NicholasV] ❌ PlayerGui not found!")
+        return
     end
-    print("[NV] ✅ Got code:", #src, "bytes")
 
-    local fn, err = loadstring(src)
-    if not fn then
-        warn("[NV] ❌ loadstring failed:", err)
-        return nil
+    -- ลบ GUI เดิมถ้ามี
+    if playerGui:FindFirstChild("NicholasV_HUB") then
+        playerGui.NicholasV_HUB:Destroy()
     end
-    local result = nil
-    local ok2, msg = pcall(function()
-        result = fn()
+
+    -- สร้าง GUI ใหม่
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "NicholasV_HUB"
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.Parent = playerGui
+
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 400, 0, 200)
+    mainFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(0, 10, 25)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = screenGui
+
+    -- Corner & Border
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0, 10)
+    uicorner.Parent = mainFrame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 2
+    stroke.Color = Color3.fromRGB(0, 140, 255)
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = mainFrame
+
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.BackgroundTransparency = 1
+    title.Text = "⚡ NicholasV HUB 2025 ⚡"
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 22
+    title.TextColor3 = Color3.fromRGB(0, 200, 255)
+    title.Parent = mainFrame
+
+    -- Test Button
+    local testButton = Instance.new("TextButton")
+    testButton.Size = UDim2.new(0, 160, 0, 40)
+    testButton.Position = UDim2.new(0.5, -80, 0.7, -20)
+    testButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    testButton.Text = "Click Me!"
+    testButton.Font = Enum.Font.GothamBold
+    testButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    testButton.Parent = mainFrame
+
+    -- Corner for Button
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 6)
+    buttonCorner.Parent = testButton
+
+    testButton.MouseButton1Click:Connect(function()
+        testButton.Text = "✅ Working!"
+        testButton.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
+        task.wait(1)
+        testButton.Text = "Click Me!"
+        testButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
     end)
-    if not ok2 then
-        warn("[NV] ❌ Error executing file:", msg)
-    else
-        print("[NV] ✅ Executed:", path)
-    end
-    return result
+
+    print("[NicholasV] ✅ GUI Initialized Successfully!")
 end
 
--- โหลด GUI module
-local GUI = import("gui/main.lua")
-
--- รัน GUI
-if GUI and type(GUI.Init) == "function" then
-    print("[NV] 🚀 Running GUI.Init() ...")
-    local ok, msg = pcall(GUI.Init)
-    if ok then
-        print("[NV] ✅ GUI.Init() executed successfully!")
-    else
-        warn("[NV] ❌ GUI.Init() error:", msg)
-    end
-else
-    warn("[NV] ❌ GUI.Init not found or GUI nil")
-end
-
-print("[NV] Loader done")
+return GUI
